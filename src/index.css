@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: improve touch experience */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
