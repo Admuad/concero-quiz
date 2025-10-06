@@ -203,14 +203,18 @@ export default function Result() {
   // Copy & Share
   const handleCopy = async () => {
     await navigator.clipboard.writeText(
-      `🚀 My Concero × Lanca IQ is ${IQ} (${rating}). Test yours at https://yourquizsite.com`
+      `My Concero × Lanca IQ is ${IQ} (${rating}). 
+      
+Test yours at https://concero-lanca-quiz.vercel.app`
     );
     alert("Result copied!");
   };
 
   const handleShare = () => {
     const text = encodeURIComponent(
-      `🟧⬛ I scored ${IQ} (${rating}) on the Concero × Lanca Quiz! Try yours: https://yourquizsite.com`
+      `I scored ${IQ} (${rating}) on the Concero × Lanca Quiz built by @adedir2!
+
+Try yours: https://concero-lanca-quiz.vercel.app`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
   };
