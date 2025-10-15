@@ -212,9 +212,13 @@ Test yours at https://concero-lanca-quiz.vercel.app`
 
   const handleShare = () => {
     const text = encodeURIComponent(
-      `I scored ${IQ} (${rating}) on the Concero × Lanca Quiz built by @adedir2!
+      `I scored ${IQ} on the Concero × Lanca Quiz built by @adedir2!
 
-Try yours: https://concero-lanca-quiz.vercel.app`
+Try yours: https://concero-lanca-quiz.vercel.app
+
+@concero_io - Secure cross-chain messaging protocol on the Chainlink stack
+
+@lanca_io - Bridge built on Concero Technology.`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
   };
