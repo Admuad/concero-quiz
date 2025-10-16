@@ -203,9 +203,13 @@ export default function Result() {
   // Copy & Share
   const handleCopy = async () => {
     await navigator.clipboard.writeText(
-      `My Concero × Lanca IQ is ${IQ} (${rating}). 
-      
-Test yours at https://concero-lanca-quiz.vercel.app`
+      `I scored ${IQ} on the Concero × Lanca Quiz built by @adedir2!
+
+Try yours: https://concero-lanca-quiz.vercel.app
+
+@concero_io - Secure cross-chain messaging protocol on the Chainlink stack.
+
+@lanca_io - Secure bridge built on Concero Technology.`
     );
     alert("Result copied!");
   };
@@ -216,9 +220,9 @@ Test yours at https://concero-lanca-quiz.vercel.app`
 
 Try yours: https://concero-lanca-quiz.vercel.app
 
-@concero_io - Secure cross-chain messaging protocol on the Chainlink stack
+@concero_io - Secure cross-chain messaging protocol on the Chainlink stack.
 
-@lanca_io - Bridge built on Concero Technology.`
+@lanca_io - Secure bridge built on Concero Technology.`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
   };
