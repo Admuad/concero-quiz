@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import questions from "../data/questions";
 
 export default function Quiz() {
-  const TOTAL_QUESTIONS = 10;
+  const TOTAL_QUESTIONS = 15;
   const QUESTION_TIME = 15;
   const AUTO_ADVANCE_DELAY = 1000;
 
@@ -103,7 +103,7 @@ export default function Quiz() {
     }
   };
 
-  const finishQuiz = () => {
+  const finishQuiz = async () => {
     const maxPoints = TOTAL_QUESTIONS * 2;
     const percent = totalPoints / maxPoints;
     const IQ = Math.round(55 + percent * 90);
@@ -114,6 +114,16 @@ export default function Quiz() {
       IQ,
       totalQuestions: TOTAL_QUESTIONS,
     };
+    await fetch("/api/submitResult", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    username: user.username,
+    IQ: result.IQ,
+    correct: result.correct,
+    totalQuestions: result.totalQuestions,
+  }),
+});
 
     navigate("/result", { state: { result, user } });
   };
