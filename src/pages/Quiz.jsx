@@ -114,19 +114,31 @@ export default function Quiz() {
       IQ,
       totalQuestions: TOTAL_QUESTIONS,
     };
-    await fetch("/api/submitResult", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    username: user.username,
-    IQ: result.IQ,
-    correct: result.correct,
-    totalQuestions: result.totalQuestions,
-  }),
-});
+
+    try {
+      const response = await fetch("https://concero-lanca-backend.onrender.com/api/submitResult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: user.username,
+          IQ: result.IQ,
+          correct: result.correct,
+          totalQuestions: result.totalQuestions,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("❌ Failed to save result:", response.statusText);
+      } else {
+        console.log("✅ Result saved successfully!");
+      }
+    } catch (error) {
+      console.error("❌ Error submitting result:", error);
+    }
 
     navigate("/result", { state: { result, user } });
   };
+
 
   if (!quizQuestions.length) {
     return (
