@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Start from "./pages/Start";
 import Quiz from "./pages/Quiz";
 import Result from "./pages/Result";
+import Leaderboard from "./pages/Leaderboard"; 
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/start" element={<Start />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/result" element={<Result />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </div>
 
