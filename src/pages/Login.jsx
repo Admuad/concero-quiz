@@ -13,7 +13,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    const cleanUsername = username.replace("@", "").trim();
+    const cleanUsername = username.replace("@", "").trim().toLowerCase();
     if (!cleanUsername) {
       setError("Please enter your X username.");
       return;
