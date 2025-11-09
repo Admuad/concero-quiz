@@ -1,4 +1,5 @@
-import React, { useRef, useMemo, useEffect, useState } from "react";
+// src/pages/Result.jsx
+import React, { useRef, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import html2canvas from "html2canvas";
@@ -23,7 +24,7 @@ const getIQRating = (iq) => {
   return "Below Average";
 };
 
-// Bell Curve component
+// Bell Curve component (unchanged)
 const BellCurveGraph = ({ iq, avatarUrl, username }) => {
   const SVG_WIDTH = 500;
   const SVG_HEIGHT = 180;
@@ -227,6 +228,9 @@ Try yours: https://concero-lanca-quiz.vercel.app
     window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
   };
 
+  const handleRestart = () => navigate("/quiz", { state: { user } });
+  const handleLeaderboard = () => navigate("/leaderboard");
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -284,27 +288,55 @@ Try yours: https://concero-lanca-quiz.vercel.app
       </motion.div>
 
       {/* Buttons */}
-      <div className="mt-6 flex flex-wrap justify-center gap-3 max-w-md">
+      <div className="mt-6 w-full max-w-md space-y-3 px-4">
+        {/* Primary Actions Row */}
+        <div className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleCopy}
+            className="flex-1 px-5 py-3 rounded-xl font-semibold text-sm bg-[#233d4d] text-white shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            Copy Text
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleDownload}
+            className="flex-1 px-5 py-3 rounded-xl font-semibold text-sm bg-[#fe7f2d] text-white shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            Download
+          </motion.button>
+        </div>
+
+        {/* Share & Leaderboard Row */}
+        <div className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleShare}
+            className="flex-1 px-5 py-3.5 rounded-xl font-bold text-sm bg-[#233d4d] text-white shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-[#233d4d] hover:bg-[#1a2d3a]"
+          >
+            Share to X
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLeaderboard}
+            className="flex-1 px-5 py-3.5 rounded-xl font-bold text-sm bg-white text-[#fe7f2d] shadow-lg hover:shadow-xl transition-all duration-200 border-2 border-[#fe7f2d] hover:bg-[#fe7f2d]/5"
+          >
+            View Leaderboard 🏆
+          </motion.button>
+        </div>
+
+        {/* Restart Button */}
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={handleCopy}
-          className="px-5 py-2 bg-gray-800 text-white rounded-lg font-semibold w-36"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleRestart}
+          className="w-full px-5 py-3 rounded-xl font-semibold text-sm bg-gray-100 text-[#233d4d] hover:bg-gray-200 transition-all duration-200 border border-gray-300"
         >
-          Copy Text
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={handleDownload}
-          className="px-5 py-2 bg-[#fe7f2d] text-white rounded-lg font-semibold w-36"
-        >
-          Download
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={handleShare}
-          className="px-5 py-2 bg-[#233d4d] text-white rounded-lg font-semibold w-36"
-        >
-          Share to X
+          Restart Quiz 🔁
         </motion.button>
       </div>
 
