@@ -63,7 +63,49 @@ export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState("daily");
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [timeUntilStart, setTimeUntilStart] = useState("");
   const itemsPerPage = 10;
+
+  // Tournament start time from environment variable
+  const tournamentStart = useMemo(() => {
+    const startTime = import.meta.env.VITE_TOURNAMENT_START_UTC;
+    return startTime ? new Date(startTime) : null;
+  }, []);
+
+  const beforeStart = tournamentStart && Date.now() < tournamentStart.getTime();
+
+  // Countdown timer
+  useEffect(() => {
+    if (!tournamentStart || !beforeStart) return;
+
+    function updateCountdown() {
+      const now = Date.now();
+      const diff = tournamentStart.getTime() - now;
+
+      if (diff <= 0) {
+        setTimeUntilStart("");
+        window.location.reload(); // Refresh when tournament starts
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      let countdown = "";
+      if (days > 0) countdown += `${days}d `;
+      if (hours > 0 || days > 0) countdown += `${hours}h `;
+      if (minutes > 0 || hours > 0 || days > 0) countdown += `${minutes}m `;
+      countdown += `${seconds}s`;
+
+      setTimeUntilStart(countdown);
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [tournamentStart, beforeStart]);
 
   useEffect(() => {
     let mounted = true;
@@ -103,11 +145,14 @@ export default function Leaderboard() {
     const s7 = startOfNDaysAgo(7);
     const s30 = startOfNDaysAgo(30);
 
+    // Filter helper: only show results after tournament start
+    const afterStart = (p) => !tournamentStart || (p.createdAt && p.createdAt >= tournamentStart);
+
     const byTab = {
-      daily: leaders.filter((p) => p.createdAt && p.createdAt >= sToday),
-      weekly: leaders.filter((p) => p.createdAt && p.createdAt >= s7),
-      monthly: leaders.filter((p) => p.createdAt && p.createdAt >= s30),
-      all: leaders.slice(),
+      daily: leaders.filter((p) => p.createdAt && p.createdAt >= sToday).filter(afterStart),
+      weekly: leaders.filter((p) => p.createdAt && p.createdAt >= s7).filter(afterStart),
+      monthly: leaders.filter((p) => p.createdAt && p.createdAt >= s30).filter(afterStart),
+      all: leaders.filter(afterStart),
     };
 
     for (const k of Object.keys(byTab)) {
@@ -115,7 +160,7 @@ export default function Leaderboard() {
     }
 
     return byTab;
-  }, [leaders]);
+  }, [leaders, tournamentStart]);
 
   const list = filtered[activeTab] || [];
 
@@ -189,10 +234,30 @@ export default function Leaderboard() {
             <div className="py-12 flex items-center justify-center">
               <p className="text-red-500">{error}</p>
             </div>
+          ) : beforeStart ? (
+            <div className="py-16 flex flex-col items-center justify-center">
+              <div className="text-6xl mb-4">🏆</div>
+              <p className="text-xl font-bold text-gray-800 mb-2">Tournament Hasn't Started Yet</p>
+              <p className="text-sm text-gray-500 mb-6">
+                Starts {tournamentStart.toLocaleString(undefined, {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZoneName: 'short'
+                })}
+              </p>
+              <div className="bg-white border-2 border-gray-200 px-8 py-4 rounded-xl shadow-md">
+                <p className="text-sm font-semibold text-gray-500 mb-1">Starts in</p>
+                <p className="text-3xl font-bold font-mono text-gray-800">{timeUntilStart || "Calculating..."}</p>
+              </div>
+            </div>
           ) : list.length === 0 ? (
             <div className="py-12 flex flex-col items-center justify-center">
               <p className="text-gray-600 font-semibold">No results for this period.</p>
-              <p className="text-xs text-gray-400 mt-2">Try switching to “All time”.</p>
+              <p className="text-xs text-gray-400 mt-2">Try switching to "All time".</p>
             </div>
           ) : (
             <>
