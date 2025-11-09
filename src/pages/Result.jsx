@@ -228,7 +228,7 @@ Try yours: https://concero-lanca-quiz.vercel.app
     window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
   };
 
-  const handleRestart = () => navigate("/quiz", { state: { user } });
+  const handleRestart = () => navigate("/start", { state: { user } });
   const handleLeaderboard = () => navigate("/leaderboard");
 
   return (
