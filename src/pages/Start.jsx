@@ -11,7 +11,7 @@ export default function Start() {
   const user = state?.user;
 
   const handleStart = () => {
-    if (user) navigate("/quiz", { state: { user } });
+    if (user) navigate("/leaderboar", { state: { user } });
     else navigate("/login");
   };
 
