@@ -263,7 +263,7 @@ export default function Leaderboard() {
             <div className="py-12 flex items-center justify-center">
               <p className="text-red-500">{error}</p>
             </div>
-          ) : beforeStart ? (
+          ) : activeTab === "tournament" && beforeStart ? (
             <div className="py-16 flex flex-col items-center justify-center">
               <div className="text-6xl mb-4">🏆</div>
               <p className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Tournament Hasn't Started Yet</p>

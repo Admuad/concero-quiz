@@ -50,6 +50,38 @@ export default function Start() {
     return "active";
   }, [tournamentStart, tournamentEnd]);
 
+  // Countdown logic for button
+  const [timeUntilStart, setTimeUntilStart] = React.useState("");
+
+  React.useEffect(() => {
+    if (tournamentStatus !== "upcoming" || !tournamentStart) return;
+
+    function updateCountdown() {
+      const now = Date.now();
+      const diff = tournamentStart.getTime() - now;
+
+      if (diff <= 0) {
+        setTimeUntilStart("");
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      let countdown = "";
+      if (days > 0) countdown += `${days}d `;
+      if (hours > 0 || days > 0) countdown += `${hours}h `;
+      countdown += `${minutes}m`;
+
+      setTimeUntilStart(countdown);
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000); // Update every minute for button
+    return () => clearInterval(interval);
+  }, [tournamentStatus, tournamentStart]);
+
   const handleStart = () => {
     if (user) navigate("/quiz", { state: { user } });
     else navigate("/login");
@@ -186,7 +218,7 @@ export default function Start() {
           >
             <span>🏆</span>
             {tournamentStatus === "active" && "Join Tournament"}
-            {tournamentStatus === "upcoming" && "Tournament Coming Soon"}
+            {tournamentStatus === "upcoming" && (timeUntilStart ? `Starts in ${timeUntilStart}` : "Tournament Coming Soon")}
             {tournamentStatus === "ended" && "Tournament Ended"}
           </motion.button>
 
