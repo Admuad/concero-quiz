@@ -3,7 +3,34 @@
 @tailwind utilities;
 
 /* Optional: improve touch experience */
-html, body {
+html,
+body {
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
+  background-color: #233d4d;
+  /* Fallback color matching accent */
+}
+
+/* Dark mode background */
+html.dark body {
+  background-color: #1f2937;
+  /* gray-800 */
+}
+
+/* Hide scrollbars but keep scroll functionality */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* For IE and Edge Legacy */
+* {
+  -ms-overflow-style: none;
 }
