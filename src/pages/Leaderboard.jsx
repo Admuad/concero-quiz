@@ -155,10 +155,10 @@ export default function Leaderboard() {
     const afterStart = (p) => !tournamentStart || (p.createdAt && p.createdAt >= tournamentStart);
 
     const byTab = {
-      daily: leaders.filter((p) => p.createdAt && p.createdAt >= sToday).filter(afterStart).filter(p => !p.isTournament),
-      weekly: leaders.filter((p) => p.createdAt && p.createdAt >= s7).filter(afterStart).filter(p => !p.isTournament),
-      monthly: leaders.filter((p) => p.createdAt && p.createdAt >= s30).filter(afterStart).filter(p => !p.isTournament),
-      all: leaders.filter(afterStart).filter(p => !p.isTournament),
+      daily: leaders.filter((p) => p.createdAt && p.createdAt >= sToday).filter(p => !p.isTournament),
+      weekly: leaders.filter((p) => p.createdAt && p.createdAt >= s7).filter(p => !p.isTournament),
+      monthly: leaders.filter((p) => p.createdAt && p.createdAt >= s30).filter(p => !p.isTournament),
+      all: leaders.filter(p => !p.isTournament),
       tournament: leaders.filter((p) => p.isTournament),
     };
 
