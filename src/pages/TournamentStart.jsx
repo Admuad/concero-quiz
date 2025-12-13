@@ -17,10 +17,13 @@ export default function TournamentStart() {
     React.useEffect(() => {
         const checkStatus = async () => {
             try {
-                // 1. Get Tournament Status
+                // 1. Get Tournament Status & Time
                 const statusRes = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-status");
                 const statusData = await statusRes.json();
                 setStatus(statusData.status);
+                if (statusData.startTime) {
+                    setStartTime(new Date(statusData.startTime));
+                }
 
                 // 2. Check if user played
                 if (user) {
@@ -41,19 +44,8 @@ export default function TournamentStart() {
         checkStatus();
     }, [user]);
 
-    const tournamentStatus = status; // Use state instead of memo
+    const tournamentStatus = status;
     const [startTime, setStartTime] = React.useState(null);
-
-    React.useEffect(() => {
-        const fetchTime = async () => {
-            try {
-                const res = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-status");
-                const data = await res.json();
-                if (data.startTime) setStartTime(new Date(data.startTime));
-            } catch (e) { console.error(e); }
-        };
-        fetchTime();
-    }, []);
 
     const handleStartTournament = () => {
         if (user) {

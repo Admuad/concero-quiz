@@ -36,6 +36,8 @@ export function getCachedAvatar(username) {
         return data;
     } catch (error) {
         console.error('Error reading avatar cache:', error);
+        // Clear invalid cache to prevent recurring errors
+        localStorage.removeItem(cacheKey);
         return null;
     }
 }

@@ -343,15 +343,18 @@ export default function Result() {
             className="flex-1 px-4 py-3 rounded-xl font-bold text-sm bg-white/40 dark:bg-white/10 text-gray-900 dark:text-white hover:bg-white/50 dark:hover:bg-white/20 transition-all duration-200 border border-white/40 dark:border-white/30 backdrop-blur-sm shadow-sm flex items-center justify-center gap-2"
           >
             <span>Restart</span>
-            <svg
+            <motion.svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              animate={isRestarting ? { rotate: 360 } : { rotate: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              whileHover={{ rotate: 180 }}
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            </motion.svg>
           </motion.button>
         </div>
       </div>
