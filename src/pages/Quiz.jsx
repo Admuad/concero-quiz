@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import questions from "../data/beginnerQuestions";
 import AnimatedBackground from "../components/AnimatedBackground";
+import { fetchWithRetry } from "../utils/api";
+import { shuffleArray } from "../utils/random";
 
 export default function Quiz() {
   const TOTAL_QUESTIONS = 15;
@@ -47,9 +49,12 @@ export default function Quiz() {
       return;
     }
 
-    const picked = [...questions]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, TOTAL_QUESTIONS);
+    const picked = shuffleArray(questions)
+      .slice(0, TOTAL_QUESTIONS)
+      .map((q) => ({
+        ...q,
+        options: shuffleArray(q.options),
+      }));
 
     setQuizQuestions(picked);
     setIndex(0);
@@ -133,7 +138,7 @@ export default function Quiz() {
     };
 
     try {
-      const response = await fetch("https://concero-lanca-backend.onrender.com/api/submitResult", {
+      const response = await fetchWithRetry("https://concero-lanca-backend.onrender.com/api/submitResult", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

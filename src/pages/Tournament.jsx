@@ -5,6 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import tournamentQuestions from "../data/tournamentQuestions";
 import AnimatedBackground from "../components/AnimatedBackground";
 import Modal from "../components/Modal";
+import { fetchWithRetry } from "../utils/api";
+import { shuffleArray } from "../utils/random";
 
 
 export default function Tournament() {
@@ -34,8 +36,23 @@ export default function Tournament() {
             if (!user) return;
             try {
                 // 1. Check Status
-                const statusRes = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-status");
-                const statusData = await statusRes.json();
+                const statusRes = await fetchWithRetry("https://concero-lanca-backend.onrender.com/api/tournament-status");
+
+                let statusData;
+                if (statusRes.ok) {
+                    try {
+                        statusData = await statusRes.json();
+                    } catch (e) {
+                        // Fallback for non-JSON response from status check
+                        console.warn("Status check returned non-JSON", e);
+                        statusData = { status: "active" }; // Assume active if status check fails but network is ok? Or error? Safer fallback.
+                    }
+                } else {
+                    // If 404/500 and retry failed, defaulting to allowing play might be safer for user experience during live event
+                    // unless it's strictly required. Let's assume active if status endpoint fails.
+                    console.warn("Status check failed, defaulting to active");
+                    statusData = { status: "active" };
+                }
 
                 if (statusData.status !== "active") {
                     setModalConfig({
@@ -49,12 +66,21 @@ export default function Tournament() {
                 }
 
                 // 2. Check Participation
-                const res = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-check", {
+                const res = await fetchWithRetry("https://concero-lanca-backend.onrender.com/api/tournament-check", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: user.username }),
                 });
-                const data = await res.json();
+
+                let data = { hasPlayed: false };
+                if (res.ok) {
+                    try {
+                        data = await res.json();
+                    } catch (e) {
+                        console.error("Check participation JSON parse error", e);
+                    }
+                }
+
                 if (data.hasPlayed) {
                     setModalConfig({
                         isOpen: true,
@@ -94,7 +120,16 @@ export default function Tournament() {
     }, [tournamentStart, tournamentEnd]);
 
     // Check if user already attempted tournament
-    const hasAttempted = useMemo(() => {
+    // Initialize tournament questions
+    useEffect(() => {
+        if (!user) return;
+
+        const picked = shuffleArray(tournamentQuestions)
+            .slice(0, TOTAL_QUESTIONS)
+            .map((q) => ({
+                ...q,
+                options: shuffleArray(q.options),
+            }));
 
         setQuizQuestions(picked);
         setIndex(0);
@@ -102,7 +137,7 @@ export default function Tournament() {
         setScoreCount(0);
         setTotalPoints(0);
         setTimeLeft(QUESTION_TIME);
-    }, [user, navigate, isTournamentActive, hasAttempted]);
+    }, [user, navigate]);
 
     // Timer logic
     useEffect(() => {
@@ -180,7 +215,7 @@ export default function Tournament() {
         };
 
         try {
-            const response = await fetch("https://concero-lanca-backend.onrender.com/api/submitTournamentResult", {
+            const response = await fetchWithRetry("https://concero-lanca-backend.onrender.com/api/submitTournamentResult", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

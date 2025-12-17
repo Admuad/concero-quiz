@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getAvatarUrl } from "../utils/avatar";
 import AnimatedBackground from "../components/AnimatedBackground";
 import ThemeToggle from "../components/ThemeToggle";
+import { fetchWithRetry } from "../utils/api";
 
 const TAB_KEYS = ["daily", "weekly", "monthly", "all", "tournament"];
 const TAB_LABELS = {
@@ -21,14 +22,14 @@ function parseDateSafe(d) {
   return isNaN(dt.getTime()) ? null : dt;
 }
 
-function startOfToday() {
+function startOfTodayUTC() {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-function startOfNDaysAgo(n) {
-  const s = startOfToday();
-  s.setDate(s.getDate() - n + 1);
+function startOfNDaysAgoUTC(n) {
+  const s = startOfTodayUTC();
+  s.setUTCDate(s.getUTCDate() - n + 1);
   return s;
 }
 
@@ -72,11 +73,21 @@ export default function Leaderboard() {
   const [timeUntilStart, setTimeUntilStart] = useState("");
   const itemsPerPage = 10;
 
-  // Tournament start time from environment variable
+  // Tournament start/end time from environment variable
   const tournamentStart = useMemo(() => {
     const startTime = import.meta.env.VITE_TOURNAMENT_START_UTC;
     return startTime ? new Date(startTime) : null;
   }, []);
+
+  const tournamentEnd = useMemo(() => {
+    const endTimeStr = import.meta.env.VITE_TOURNAMENT_END_UTC;
+    if (endTimeStr) return new Date(endTimeStr);
+
+    if (!tournamentStart) return null;
+    const endDate = new Date(tournamentStart);
+    endDate.setUTCDate(endDate.getUTCDate() + 7); // Default 7 days if not set
+    return endDate;
+  }, [tournamentStart]);
 
   const beforeStart = tournamentStart && Date.now() < tournamentStart.getTime();
 
@@ -119,12 +130,16 @@ export default function Leaderboard() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch("https://concero-lanca-backend.onrender.com/api/leaderboard");
+        // Pass activeTab as timeframe query param
+        const res = await fetchWithRetry(`https://concero-lanca-backend.onrender.com/api/leaderboard?timeframe=${activeTab}`);
+
+        // fetchWithRetry handles throwing for 5xx/429, but returns 4xx response object.
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data = await res.json();
         if (!mounted) return;
         const normalized = (data || []).map((p) => {
-          const created = p.createdAt || p.updatedAt || p.created_at || null;
+          const created = p.createdAt || p.updatedAt || p.created_at || p.date || null;
           return {
             ...p,
             createdAtRaw: created,
@@ -144,32 +159,14 @@ export default function Leaderboard() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [activeTab]);
 
-  const filtered = useMemo(() => {
-    const sToday = startOfToday();
-    const s7 = startOfNDaysAgo(7);
-    const s30 = startOfNDaysAgo(30);
 
-    // Filter helper: only show results after tournament start
-    const afterStart = (p) => !tournamentStart || (p.createdAt && p.createdAt >= tournamentStart);
 
-    const byTab = {
-      daily: leaders.filter((p) => p.createdAt && p.createdAt >= sToday).filter(p => !p.isTournament),
-      weekly: leaders.filter((p) => p.createdAt && p.createdAt >= s7).filter(p => !p.isTournament),
-      monthly: leaders.filter((p) => p.createdAt && p.createdAt >= s30).filter(p => !p.isTournament),
-      all: leaders.filter(p => !p.isTournament),
-      tournament: leaders.filter((p) => p.isTournament),
-    };
 
-    for (const k of Object.keys(byTab)) {
-      byTab[k].sort((a, b) => (b.IQ || 0) - (a.IQ || 0) || (a.createdAt || 0) - (b.createdAt || 0));
-    }
 
-    return byTab;
-  }, [leaders, tournamentStart]);
-
-  const list = filtered[activeTab] || [];
+  // No client-side filtering needed anymore
+  const list = leaders;
 
   // Reset pagination on tab switch
   useEffect(() => {
