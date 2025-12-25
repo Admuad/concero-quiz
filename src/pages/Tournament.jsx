@@ -240,8 +240,6 @@ export default function Tournament() {
                     });
                     return; // Stop execution to show modal
                 }
-            } else {
-                console.log("✅ Tournament result saved successfully!");
             }
         } catch (error) {
             console.error("❌ Error submitting result:", error);

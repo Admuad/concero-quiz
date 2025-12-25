@@ -151,8 +151,6 @@ export default function Quiz() {
 
       if (!response.ok) {
         console.error("❌ Failed to save result:", response.statusText);
-      } else {
-        console.log("✅ Result saved successfully!");
       }
     } catch (error) {
       console.error("❌ Error submitting result:", error);

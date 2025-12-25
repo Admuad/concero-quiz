@@ -42,45 +42,41 @@ export default function Start() {
     return endDate;
   }, [tournamentStart]);
 
-  const tournamentStatus = useMemo(() => {
-    if (!tournamentStart || !tournamentEnd) return "active"; // Default to active if no dates
-    const now = Date.now();
-    if (now < tournamentStart.getTime()) return "upcoming";
-    if (now > tournamentEnd.getTime()) return "ended";
-    return "active";
-  }, [tournamentStart, tournamentEnd]);
-
-  // Countdown logic for button
-  const [timeUntilStart, setTimeUntilStart] = React.useState("");
+  // Current time state for reactivity
+  const [currentTime, setCurrentTime] = React.useState(Date.now());
 
   React.useEffect(() => {
-    if (tournamentStatus !== "upcoming" || !tournamentStart) return;
-
-    function updateCountdown() {
-      const now = Date.now();
-      const diff = tournamentStart.getTime() - now;
-
-      if (diff <= 0) {
-        setTimeUntilStart("");
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-      let countdown = "";
-      if (days > 0) countdown += `${days}d `;
-      if (hours > 0 || days > 0) countdown += `${hours}h `;
-      countdown += `${minutes}m`;
-
-      setTimeUntilStart(countdown);
-    }
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // Update every minute for button
+    const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => clearInterval(interval);
-  }, [tournamentStatus, tournamentStart]);
+  }, []);
+
+  const tournamentStatus = useMemo(() => {
+    if (!tournamentStart || !tournamentEnd) return "active"; // Default to active if no dates
+    if (currentTime < tournamentStart.getTime()) return "upcoming";
+    if (currentTime > tournamentEnd.getTime()) return "ended";
+    return "active";
+  }, [tournamentStart, tournamentEnd, currentTime]);
+
+  // Countdown logic for button
+  const timeUntilStart = useMemo(() => {
+    if (tournamentStatus !== "upcoming" || !tournamentStart) return "";
+
+    const diff = tournamentStart.getTime() - currentTime;
+    if (diff <= 0) return "";
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    let countdown = "";
+    if (days > 0) countdown += `${days}d `;
+    if (hours > 0 || days > 0) countdown += `${hours}h `;
+    if (minutes > 0 || hours > 0 || days > 0) countdown += `${minutes}m `;
+    countdown += `${seconds}s`;
+
+    return countdown;
+  }, [tournamentStatus, tournamentStart, currentTime]);
 
   const handleStart = () => {
     if (user) navigate("/quiz", { state: { user } });
@@ -191,38 +187,60 @@ export default function Start() {
 
         {/* Buttons */}
         <div className="flex flex-col space-y-4 mt-8">
-          {/* Start Quiz */}
-          {/* Start Quiz */}
-          <motion.button
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleStart}
-            className="bg-gradient-to-r from-[#fe7f2d] to-[#ff9f5a] text-white font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all duration-300 text-lg border border-white/20"
-          >
-            Start Quiz
-          </motion.button>
+          {/* Dynamic Buttons based on Tournament Status */}
+          {tournamentStatus === "active" ? (
+            <>
+              {/* Active Tournament Button - Primary */}
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleTournament}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 text-lg flex items-center justify-center gap-2 border border-white/10 relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+                <span className="relative z-10 text-2xl">🏆</span>
+                <span className="relative z-10">Join Tournament (Live!)</span>
+              </motion.button>
 
-          {/* Tournament Button */}
-          {/* Tournament Button */}
-          <motion.button
-            whileHover={{ scale: tournamentStatus === "active" ? 1.02 : 1, y: tournamentStatus === "active" ? -2 : 0 }}
-            whileTap={{ scale: tournamentStatus === "active" ? 0.98 : 1 }}
-            onClick={tournamentStatus === "active" ? handleTournament : undefined}
-            disabled={tournamentStatus !== "active"}
-            className={`font-bold py-3.5 px-8 rounded-xl shadow-lg transition-all duration-300 text-lg flex items-center justify-center gap-2 border border-white/10 ${tournamentStatus === "active"
-              ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-purple-500/30 cursor-pointer"
-              : tournamentStatus === "upcoming"
-                ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500 cursor-not-allowed"
-              }`}
-          >
-            <span>🏆</span>
-            {tournamentStatus === "active" && "Join Tournament"}
-            {tournamentStatus === "upcoming" && (timeUntilStart ? `Starts in ${timeUntilStart}` : "Tournament Coming Soon")}
-            {tournamentStatus === "ended" && "Tournament Ended"}
-          </motion.button>
+              {/* Practice Mode Button - Secondary */}
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleStart}
+                className="w-full bg-transparent text-gray-700 dark:text-gray-300 font-bold py-3.5 px-8 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-[#fe7f2d] hover:text-[#fe7f2d] dark:hover:border-[#fe7f2d] dark:hover:text-[#fe7f2d] hover:bg-orange-50 dark:hover:bg-white/5 transition-all duration-300"
+              >
+                Practice Mode
+              </motion.button>
+            </>
+          ) : (
+            <>
+              {/* Normal Start Quiz Button - Primary */}
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleStart}
+                className="bg-gradient-to-r from-[#fe7f2d] to-[#ff9f5a] text-white font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all duration-300 text-lg border border-white/20"
+              >
+                Start Quiz
+              </motion.button>
 
-          {/* View Leaderboard */}
+              {/* Tournament Button - Secondary/Disabled/Upcoming */}
+              <motion.button
+                whileHover={{ scale: tournamentStatus === "upcoming" ? 1 : 1, y: 0 }}
+                onClick={undefined}
+                disabled={true}
+                className={`font-bold py-3.5 px-8 rounded-xl shadow-lg transition-all duration-300 text-lg flex items-center justify-center gap-2 border border-white/10 ${tournamentStatus === "upcoming"
+                  ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                <span>🏆</span>
+                {tournamentStatus === "upcoming" && (timeUntilStart ? `Tournament Starts in ${timeUntilStart}` : "Tournament Coming Soon")}
+                {tournamentStatus === "ended" && "Tournament Ended"}
+              </motion.button>
+            </>
+          )}
+
           {/* View Leaderboard */}
           <motion.button
             whileHover={{ scale: 1.02, y: -2 }}

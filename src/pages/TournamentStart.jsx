@@ -13,36 +13,73 @@ export default function TournamentStart() {
     const [status, setStatus] = React.useState("loading");
     const [hasPlayed, setHasPlayed] = React.useState(false);
 
+    // Tournament time validation (Synced with Start.jsx)
+    const tournamentStart = useMemo(() => {
+        const startTime = import.meta.env.VITE_TOURNAMENT_START_UTC;
+        return startTime ? new Date(startTime) : null;
+    }, []);
+
+    const tournamentEnd = useMemo(() => {
+        const endTimeStr = import.meta.env.VITE_TOURNAMENT_END_UTC;
+        if (endTimeStr) return new Date(endTimeStr);
+
+        if (!tournamentStart) return null;
+        const endDate = new Date(tournamentStart);
+        endDate.setDate(endDate.getDate() + 7); // 7 days tournament
+        return endDate;
+    }, [tournamentStart]);
+
+    const localStatus = useMemo(() => {
+        if (!tournamentStart) {
+            // Fallback if no env vars, maybe fetch? But for now default to active or check valid dates
+            return "active";
+        }
+        const now = Date.now();
+        if (now < tournamentStart.getTime()) return "upcoming";
+        if (tournamentEnd && now > tournamentEnd.getTime()) return "ended";
+        return "active";
+    }, [tournamentStart, tournamentEnd]);
+
+
     // Fetch tournament status and check participation
     React.useEffect(() => {
-        const checkStatus = async () => {
-            try {
-                // 1. Get Tournament Status & Time
-                const statusRes = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-status");
-                const statusData = await statusRes.json();
-                setStatus(statusData.status);
-                if (statusData.startTime) {
-                    setStartTime(new Date(statusData.startTime));
-                }
+        const init = async () => {
+            // 1. Set Status based on local env (Immediate)
+            setStatus(localStatus);
+            if (tournamentStart) {
+                setStartTime(tournamentStart);
+            }
 
-                // 2. Check if user played
-                if (user) {
-                    const playedRes = await fetch("https://concero-lanca-backend.onrender.com/api/tournament-check", {
+            // 2. Check if user played (with timeout/mock fallback)
+            if (user) {
+                try {
+                    // Create a promise that rejects after 5 seconds
+                    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), 5000));
+
+                    const fetchPromise = fetch("https://concero-lanca-backend.onrender.com/api/tournament-check", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ username: user.username }),
                     });
-                    const playedData = await playedRes.json();
-                    setHasPlayed(playedData.hasPlayed);
+
+                    const playedRes = await Promise.race([fetchPromise, timeout]);
+
+                    if (playedRes.ok) {
+                        const playedData = await playedRes.json();
+                        setHasPlayed(playedData.hasPlayed);
+                    } else {
+                        throw new Error("Backend response not ok");
+                    }
+                } catch (error) {
+                    console.warn("Error checking tournament participation (using mock default: false):", error);
+                    // For local testing/unreachable backend, assume not played so we can test UI
+                    setHasPlayed(false);
                 }
-            } catch (error) {
-                console.error("Error checking tournament:", error);
-                setStatus("error");
             }
         };
 
-        checkStatus();
-    }, [user]);
+        init();
+    }, [user, localStatus, tournamentStart]);
 
     const tournamentStatus = status;
     const [startTime, setStartTime] = React.useState(null);
