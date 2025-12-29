@@ -138,7 +138,7 @@ export default function TournamentStart() {
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="bg-orange-200 text-orange-800 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">3</span>
-                            <span>15 seconds per question. Speed earns bonus points.</span>
+                            <span>60 seconds per question. Speed earns bonus points.</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="bg-orange-200 text-orange-800 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">4</span>
