@@ -213,7 +213,7 @@ export default function Start() {
 
           <ul className="list-disc list-inside text-left space-y-2 relative z-10">
             <li className="hover:translate-x-1 transition-transform duration-200">You'll get 15 random questions.</li>
-            <li className="hover:translate-x-1 transition-transform duration-200">Each question has a 15-second timer.</li>
+            <li className="hover:translate-x-1 transition-transform duration-200">Each question has a 60-second timer.</li>
             <li className="hover:translate-x-1 transition-transform duration-200">Answer quickly and correctly to score higher.</li>
             <li className="hover:translate-x-1 transition-transform duration-200">Your IQ will be calculated based on speed and accuracy.</li>
           </ul>
