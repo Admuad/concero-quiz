@@ -241,12 +241,17 @@ export default function Start() {
                 )}
 
                 <span className="relative z-10 text-2xl">🏆</span>
-                <span className="relative z-10">
-                  {tournamentStatus === "active"
-                    ? "Join Tournament (Live!)"
-                    : (timeUntilStart ? `Tournament Starts in ${timeUntilStart}` : "Tournament Coming Soon")
-                  }
-                </span>
+
+                {tournamentStatus === "active" ? (
+                  <span className="relative z-10 font-bold">Join Tournament (Live!)</span>
+                ) : (
+                  <div className="flex flex-col items-center leading-tight relative z-10">
+                    <span className="text-xs sm:text-sm uppercase tracking-wider opacity-90 mb-0.5">Tournament Starts In</span>
+                    <span className="text-xl sm:text-2xl font-mono font-bold tracking-widest">
+                      {timeUntilStart || "--:--:--"}
+                    </span>
+                  </div>
+                )}
               </motion.button>
 
               {/* Practice Mode Button - Secondary */}
