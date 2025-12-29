@@ -220,6 +220,7 @@ export default function Tournament() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     username: user.username,
+                    discordHandle: user.discordHandle, // Send collected handle
                     score: result.IQ, // Using IQ as the score for leaderboard
                     correct: result.correct,
                     totalQuestions: result.totalQuestions,
