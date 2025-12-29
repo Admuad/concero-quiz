@@ -334,7 +334,7 @@ export default function Leaderboard() {
                               )}
 
                               {player.isTournament && (
-                                <span className="text-[10px] bg-yellow-100 text-yellow-800 border border-yellow-200 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide">
+                                <span className="hidden">
                                   🏆 Cup
                                 </span>
                               )}
