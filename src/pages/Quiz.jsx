@@ -9,7 +9,7 @@ import { shuffleArray } from "../utils/random";
 
 export default function Quiz() {
   const TOTAL_QUESTIONS = 15;
-  const QUESTION_TIME = 60;
+  const QUESTION_TIME = 15;
   const AUTO_ADVANCE_DELAY = 1000;
 
   const navigate = useNavigate();
