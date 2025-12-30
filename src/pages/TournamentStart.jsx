@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import AnimatedBackground from "../components/AnimatedBackground";
 import Countdown from "../components/Countdown";
+import { fetchWithRetry } from "../utils/api";
 
 export default function TournamentStart() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function TournamentStart() {
 
     const [status, setStatus] = React.useState("loading");
     const [hasPlayed, setHasPlayed] = React.useState(false);
+    const [connectionError, setConnectionError] = React.useState(false);
 
     // Tournament time validation (Synced with Start.jsx)
     const tournamentStart = useMemo(() => {
@@ -50,30 +52,28 @@ export default function TournamentStart() {
                 setStartTime(tournamentStart);
             }
 
-            // 2. Check if user played (with timeout/mock fallback)
+            // 2. Check if user played (using retry logic for cold starts)
             if (user) {
                 try {
-                    // Create a promise that rejects after 5 seconds
-                    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), 5000));
-
-                    const fetchPromise = fetch("https://concero-lanca-backend.onrender.com/api/tournament-check", {
+                    // Use fetchWithRetry (handles 5xx and network errors, waits longer)
+                    const playedRes = await fetchWithRetry("https://concero-lanca-backend.onrender.com/api/tournament-check", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ username: user.username }),
                     });
 
-                    const playedRes = await Promise.race([fetchPromise, timeout]);
-
                     if (playedRes.ok) {
                         const playedData = await playedRes.json();
                         setHasPlayed(playedData.hasPlayed);
                     } else {
-                        throw new Error("Backend response not ok");
+                        // If API returns non-200 (like 404 or 500 even after retries), handle it
+                        throw new Error(`Backend returned ${playedRes.status}`);
                     }
                 } catch (error) {
-                    console.warn("Error checking tournament participation (using mock default: false):", error);
-                    // For local testing/unreachable backend, assume not played so we can test UI
-                    setHasPlayed(false);
+                    console.error("Error checking tournament participation:", error);
+                    // On failure, show retry button
+                    setConnectionError(true);
+                    setStatus("active");
                 }
             }
         };
@@ -147,9 +147,18 @@ export default function TournamentStart() {
                     </ul>
                 </div>
 
-                {/* Start Button */}
+                {/* Start / Retry Button */}
                 <div className="flex justify-center">
-                    {tournamentStatus === "active" && !hasPlayed ? (
+                    {connectionError ? (
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => window.location.reload()}
+                            className="bg-red-500 text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg"
+                        >
+                            Connection Error - Retry 🔄
+                        </motion.button>
+                    ) : tournamentStatus === "active" && !hasPlayed ? (
                         <motion.button
                             onClick={handleStartTournament}
                             animate={{

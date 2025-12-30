@@ -1,0 +1,126 @@
+New Year Quiz 
+1. What best describes Motherboard’s core innovation in interoperability? 
+A. A faster trust-minimized cross-chain bridge 
+B. A brand-new generalized Layer-1 blockchain 
+C. A modular mental model commoditising communication and distribution 
+D. A unified globally shared relayer infrastructure 
+Answer: C 
+2. Which actor in the Motherboard architecture is responsible for gas management across 
+chains? 
+A. Independent cryptographic verifier networks 
+B. Decentralised transaction relayer networks 
+C. Read-write blockchain RPC service providers 
+D. Core routing smart contract modules 
+Answer: B 
+3. What does “non-discriminatory distribution” specifically enable? 
+A. Exclusive chain partnerships and integrations 
+B. Permissioned deployment across approved networks 
+C. Fast cheap permissionless scaling to new chains 
+D. Validator reward alignment and optimisation 
+Answer: C 
+4. When is a transaction officially considered valid on the destination chain? 
+A. Once the message payload is delivered 
+B. When cross-chain gas fees are settled 
+C. After off-chain client execution completes 
+D. When verifier report and relayer signature both match 
+Answer: D 
+5. How does Motherboard specifically expand Total Addressable Market (TAM) for 
+applications? 
+A. By reducing deployed smart contract complexity 
+B. By enforcing protocol-wide standard interfaces 
+C. By acting as a neutral distribution rail across chains 
+D. By limiting deployment to approved ecosystems 
+Answer: C 
+6. Which definition best captures “messaging” as described in Andy Bohutsky’s article? 
+A. Broadcasting transactions simultaneously to all chains 
+B. Copying global blockchain state across networks 
+C. Passing instructions or data so events trigger across chains 
+D. Synchronizing block production times across ledgers 
+Answer: C 
+7. What problem did the “hub and spoke” interoperability model attempt to solve? 
+A. Validator power concentration across networks 
+B. Fragmentation of users and liquidity across chains 
+C. Excessive gas fees on base layer networks 
+D. Increasing smart contract development complexity 
+Answer: B 
+8. The earliest interoperability model (circa 2017) is compared to which telecommunication 
+system? 
+A. Early consumer internet broadband networks 
+B. Modern cellular communication infrastructures 
+C. Telegraph-style point-to-point communication 
+D. Long-range satellite relay communication 
+Answer: C 
+9. What is the correct order of steps for a message to move from chain A to chain B? 
+A. Deliver message, read event, validate proof, write state 
+B. Read event, validate proof, deliver message, write state 
+C. Validate proof, read event, write state, deliver message 
+D. Read event, deliver message, validate proof, write state 
+Answer: B 
+10. Why are blockchains described as monolithic by design? 
+A. They rely on fully centralized validator committees 
+B. They prioritise execution speed over security 
+C. They only support a single programming language 
+D. They cannot natively communicate with external systems 
+Answer: D 
+11. According to Andy Bohutsky’s article, what is the first clear signal that interoperability is 
+not solved? 
+A. Persistently high transaction fees across chains 
+B. Insufficient tooling available for developers 
+C. Discriminatory distribution across blockchain ecosystems 
+D. Slow and inconsistent transaction finality times 
+Answer: C 
+12. Why does the article argue that apps and asset issuers are “second-class citizens”? 
+A. They lack the required technical infrastructure 
+B. Their distribution is controlled by infrastructure providers 
+C. They rely on chains to access liquidity 
+D. They are unable to deploy across chains 
+Answer: B 
+13. Which statement best summarizes the current power dynamic in interoperability? 
+A. Users dictate standards across all protocols 
+B. Chains dictate how applications must behave 
+C. Infrastructure dictates terms to value generators 
+D. Value generators dictate infrastructure design 
+Answer: C 
+14. Which principle is emphasized as essential for the future of interoperability? 
+A. Infrastructure ownership and value capture 
+B. Permissioned access for verified participants 
+C. Provider-centric standards and governance 
+D. Neutral open trustless and permissionless systems 
+Answer: D 
+15. What percentage of the onchain world currently receives interoperability services from 
+the largest interop protocol? 
+A. Roughly half of existing blockchain networks 
+B. About one quarter of deployed chains 
+C. Approximately ten percent of the ecosystem 
+D. Nearly one percent of all blockchains 
+Answer: C 
+16. What mechanism is used by interoperability providers to build moats? 
+A. Highly restrictive validator admission requirements 
+B. Carefully curated exclusive ecosystem partnerships 
+C. Vendor-locking technical standards and interfaces 
+D. Centralized governance-driven protocol decision making 
+Answer: C 
+17. Approximately how many EVM chains exist, according to the article? 
+A. Roughly five hundred active EVM chains 
+B. Nearly eight hundred deployed EVM chains 
+C. About one thousand operational EVM chains 
+D. Over one thousand four hundred forty-five EVM chains 
+Answer: D 
+18. Why are cell-tower-like interoperability models still considered problematic? 
+A. They lack fully permissionless chain onboarding 
+B. They cannot scale efficiently beyond Layer 2s 
+C. They rely on rent-seeking and value extraction 
+D. They remove validators from transaction verification 
+Answer: B 
+19. What ensures Motherboard remains trustless and neutral? 
+A. A central coordinating authority overseeing transactions 
+B. Fixed infrastructure providers controlling execution flow 
+C. Independent actors with no single source of truth 
+D. Permissioned participation governed by protocol rules 
+Answer: C 
+20. What input does the verifier network require to generate a tamper-proof report? 
+A. User-defined write RPC endpoint address 
+B. Cryptographic relayer network signature proof 
+C. User-defined read RPC endpoint address 
+D. Destination blockchain unique chain identifier 
+Answer: C 

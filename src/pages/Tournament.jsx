@@ -10,7 +10,7 @@ import { shuffleArray } from "../utils/random";
 
 
 export default function Tournament() {
-    const TOTAL_QUESTIONS = 10;
+    const TOTAL_QUESTIONS = 15;
     const QUESTION_TIME = 60;
     const AUTO_ADVANCE_DELAY = 1000;
 
@@ -119,10 +119,16 @@ export default function Tournament() {
         return now >= tournamentStart.getTime() && now <= tournamentEnd.getTime();
     }, [tournamentStart, tournamentEnd]);
 
-    // Check if user already attempted tournament
-    // Initialize tournament questions
+    // Check for Discord handle and Initialize tournament
     useEffect(() => {
         if (!user) return;
+
+        // Security: Require Discord Handle
+        if (!user.discordHandle) {
+            console.warn("No Discord handle found, redirecting...");
+            navigate("/tournament-start", { state: { user } });
+            return;
+        }
 
         const picked = shuffleArray(newYearEveQuestions)
             .slice(0, TOTAL_QUESTIONS)
@@ -139,29 +145,38 @@ export default function Tournament() {
         setTimeLeft(QUESTION_TIME);
     }, [user, navigate]);
 
-    // Timer logic
+    // Timer logic (Delta Time - Cheat Proof)
+    const questionStartTime = useRef(null);
+
+    // Reset start time when question changes
     useEffect(() => {
-        if (!quizQuestions.length) return;
+        if (quizQuestions.length > 0 && selected === null) {
+            questionStartTime.current = Date.now();
+            setTimeLeft(QUESTION_TIME);
+        }
+    }, [index, quizQuestions]);
+
+    useEffect(() => {
+        if (!quizQuestions.length || selected !== null) return;
+
         clearInterval(timerRef.current);
 
         timerRef.current = setInterval(() => {
-            setTimeLeft((t) => (t > 0 && selected === null ? t - 1 : t));
-        }, 1000);
+            if (!questionStartTime.current) return;
+
+            const now = Date.now();
+            const elapsed = Math.floor((now - questionStartTime.current) / 1000);
+            const newTimeLeft = Math.max(0, QUESTION_TIME - elapsed);
+
+            setTimeLeft(newTimeLeft);
+
+            if (newTimeLeft === 0) {
+                handleTimeout();
+            }
+        }, 200); // Check 5 times a second for smoothness
 
         return () => clearInterval(timerRef.current);
     }, [quizQuestions, index, selected]);
-
-    useEffect(() => {
-        if (!quizQuestions.length) return;
-        if (timeLeft <= 0 && selected === null) handleTimeout();
-    }, [timeLeft, quizQuestions, selected]);
-
-    useEffect(() => {
-        return () => {
-            clearTimeout(autoAdvanceRef.current);
-            clearInterval(timerRef.current);
-        };
-    }, []);
 
     const currentQ = quizQuestions[index];
 
