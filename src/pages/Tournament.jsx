@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import tournamentQuestions from "../data/tournamentQuestions";
+import newYearEveQuestions from "../data/newYearEveQuestions";
 import AnimatedBackground from "../components/AnimatedBackground";
 import Modal from "../components/Modal";
 import { fetchWithRetry } from "../utils/api";
@@ -10,7 +10,7 @@ import { shuffleArray } from "../utils/random";
 
 
 export default function Tournament() {
-    const TOTAL_QUESTIONS = 15;
+    const TOTAL_QUESTIONS = 10;
     const QUESTION_TIME = 60;
     const AUTO_ADVANCE_DELAY = 1000;
 
@@ -124,7 +124,7 @@ export default function Tournament() {
     useEffect(() => {
         if (!user) return;
 
-        const picked = shuffleArray(tournamentQuestions)
+        const picked = shuffleArray(newYearEveQuestions)
             .slice(0, TOTAL_QUESTIONS)
             .map((q) => ({
                 ...q,
