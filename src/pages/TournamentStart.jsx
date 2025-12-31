@@ -134,7 +134,7 @@ export default function TournamentStart() {
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="bg-orange-200 text-orange-800 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">2</span>
-                            <span>15 challenging questions from the tournament pool.</span>
+                            <span>20 challenging questions from the tournament pool.</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="bg-orange-200 text-orange-800 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">3</span>
