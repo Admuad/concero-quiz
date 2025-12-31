@@ -10,7 +10,7 @@ import { shuffleArray } from "../utils/random";
 
 
 export default function Tournament() {
-    const TOTAL_QUESTIONS = 15;
+    const TOTAL_QUESTIONS = 20;
     const QUESTION_TIME = 60;
     const AUTO_ADVANCE_DELAY = 1000;
 
